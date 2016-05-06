@@ -27,7 +27,7 @@
                 var adv_data = peripheral.manufacturerData['0131'];
                 adv_data = adv_data.toUpperCase();
                 if(adv_data.indexOf("02150005000100001000800000805F9B0131") > -1){
-                    var data = adv_data.substr(adv_data.indexOf("02150005000100001000800000805F9B0131") + 32 , 4);
+                    var data = adv_data.substr(adv_data.indexOf("02150005000100001000800000805F9B0131") + 40 , 4);
                     var hex_humidity = data[0]+data[1]+'0'+'1';
                     var hex_temperature = data[2]+data[3]+'0'+'0';
                     cypressWSN.temperature = Math.round((parseInt(hex_temperature, 16)*175.72/65536-46.85)*100)/100 + ' °C';
