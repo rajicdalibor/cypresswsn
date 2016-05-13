@@ -7,30 +7,41 @@
         <title>Cypress WSN</title>
         <link rel='stylesheet prefetch' href='//cdnjs.cloudflare.com/ajax/libs/angular-material/0.9.7/angular-material.min.css'>
         <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.1/nv.d3.min.css"/> 
     </head>
     
     <script src='//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular.min.js'></script>
     <script src='//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular-animate.min.js'></script>
     <script src='//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular-aria.min.js'></script>
     <script src='//cdnjs.cloudflare.com/ajax/libs/angular-material/0.8.2/angular-material.min.js'></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.1/nv.d3.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-nvd3/1.0.5/angular-nvd3.min.js"></script>
+
     <script src="//blueappio.github.io/blueapp.io/blueapp.io.min.js"></script>
     <script src="cypressWSN.js"></script>
     <script src="app.js"></script>
 
-    <body ng-app="cypressWSN" class="thing">
+    <body ng-app="cypressWSN" class="cypress thing">
         <div ng-controller="mainController as main" md-theme-watch="true">
-            <div class="layout-wrap layout-row flex-100" layout="row" flex="100" layout-wrap="">
-                <div layout="column" flex="100" flex-gt-sm="50" class="layout-column flex-gt-sm-50 flex-100">
-                    <md-input-container>
-                        <label>Temperature</label>
-                        <input type="text" ng-model="cypressWSN.temperature" ng-disabled="true" style="color:black;">
-                    </md-input-container>
-                </div>
-                <div layout="column" flex="100" flex-gt-sm="50" class="layout-column flex-gt-sm-50 flex-100">
-                    <md-input-container>
-                        <label>Humidity</label>
-                        <input type="text" ng-model="cypressWSN.humidity" ng-disabled="true" style="color:black;">
-                    </md-input-container>
+            <div ng-repeat="peripheral in cypressWSN.peripherals">
+                <h3>{{peripheral.name}}</h3>
+                <div class="layout-wrap layout-row flex-100" layout="row" flex="100" layout-wrap="">
+                    <div layout="column" flex="100" flex-gt-sm="50" class="layout-column flex-gt-sm-50 flex-100">
+                        <md-input-container>
+                            <label>Temperature</label>
+                            <input type="text" ng-model="peripheral.temperature" ng-disabled="true" style="color:black;">
+                        </md-input-container>
+                        <nvd3 options="tempOptions" data="peripheral.tempGraphData" style="margin-left: -30px;" ng-show="peripheral.tempData"></nvd3>
+                    </div>
+                    <div layout="column" flex="100" flex-gt-sm="50" class="layout-column flex-gt-sm-50 flex-100">
+                        <md-input-container>
+                            <label>Humidity</label>
+                            <input type="text" ng-model="peripheral.humidity" ng-disabled="true" style="color:black;">
+                        </md-input-container>
+                        <nvd3 options="humidityOptions" data="peripheral.humidityGraphData" style="margin-left: -30px;" ng-show="peripheral.humidityData"></nvd3>
+                    </div>
                 </div>
             </div>
         </div>

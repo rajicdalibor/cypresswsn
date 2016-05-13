@@ -1,11 +1,17 @@
 (function() {
 
     var gateway = null;
+    var count = 0;
 
     class CypressWSN {
         constructor() {
             this.temperature = '';
             this.humidity = '';
+            this.time = '';
+            this.tempData = [];
+            this.humidityData = [];
+
+            this.peripherals = {};
             gateway = navigator.bluetooth.gateway;
 
             gateway.onstate = function(error) {
@@ -25,14 +31,45 @@
                     return;
                 }
                 var adv_data = peripheral.manufacturerData['0131'];
-                adv_data = adv_data.toUpperCase();
-                if(adv_data.indexOf("0005000100001000800000805F9B01310001") > -1){
-                    var data = adv_data.substr(adv_data.indexOf("0005000100001000800000805F9B01310001") + 36 , 4);
-                    var hex_humidity = data[0]+data[1]+'0'+'1';
-                    var hex_temperature = data[2]+data[3]+'0'+'0';
-                    cypressWSN.temperature = Math.round((parseInt(hex_temperature, 16)*175.72/65536-46.85)*100)/100 + ' °C';
-                    cypressWSN.humidity = Math.round((parseInt(hex_humidity, 16)*125/65536-6)*100)/100 + ' %rH';
-                    cypressWSN.updateUI();
+                if(adv_data){
+                    adv_data = adv_data.toUpperCase();
+                    if(adv_data.indexOf("0005000100001000800000805F9B0131") > -1){
+                        if(!cypressWSN.peripherals[peripheral.uuid]){
+                            peripheral.tempGraphData = [{ values: [], key: 'Temperature' }];
+                            peripheral.humidityGraphData = [{ values: [], key: 'Humidity'}];
+                        }
+
+                        cypressWSN.peripherals[peripheral.uuid] = peripheral;
+                        var data = adv_data.substr(adv_data.lastIndexOf("C3") - 4, 4);
+                        var hex_humidity = data[0]+data[1]+'0'+'1';
+                        var hex_temperature = data[2]+data[3]+'0'+'0';
+                        var temperature = Math.round((parseInt(hex_temperature, 16)*175.72/65536-46.85)*100)/100;
+                        var humidity = Math.round((parseInt(hex_humidity, 16)*125/65536-6)*100)/100;
+
+                        var d = new Date();
+                        var currDate = d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
+
+                        if(!isNaN(Number(temperature))){
+                            cypressWSN.peripherals[peripheral.uuid].tempData = {
+                                      timeNum: count,
+                                      date: currDate,
+                                      temp: Number(temperature)
+                                  }
+                        }
+                        if(!isNaN(Number(humidity))){
+                            cypressWSN.peripherals[peripheral.uuid].humidityData = {
+                                      timeNum: count,
+                                      date: currDate,
+                                      temp: Number(humidity)
+                                }
+                        }
+                        count++;
+
+                        cypressWSN.time = currDate;
+                        cypressWSN.peripherals[peripheral.uuid].temperature = temperature + ' °C';
+                        cypressWSN.peripherals[peripheral.uuid].humidity = humidity + ' %rH';
+                        cypressWSN.updateUI();
+                    }
                 }
             };           
 

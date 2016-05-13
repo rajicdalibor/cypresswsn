@@ -1,5 +1,5 @@
 .thing {
-  padding: 14px;
+  padding: 10px;
   font-size: large;
   font-weight: 500;
 }
@@ -8,4 +8,7 @@ md-toast.md-success-toast-theme {
 }
 md-toast.md-error-toast-theme {
     background-color: red;
+}
+.cypress h3 {
+	color: #28ade5;
 }
